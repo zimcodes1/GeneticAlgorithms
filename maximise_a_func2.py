@@ -56,14 +56,14 @@ def genetic_algorithm(generations:int=20):
     for generation in range(generations):
         parents = select(population)
         new_population = []
-        while len(new_population) < generations:
+        while len(new_population) < 10:
                parent1, parent2 = random.sample(parents, 2)
                child1, child2 = crossover(parent1, parent2)
                child1, child2 = mutate([child1]), mutate([child2])
                new_population += child1, child2
         population = new_population
         best_individual = max(population, key=fitness)
-        print(f"Generation {generation}: x = {best_individual} fitness = {fitness(best_individual)}")
+        print(f"Generation {generation +1}: x = {best_individual} fitness = {fitness(best_individual)}")
     return max(population, key=fitness)
 
 genetic_algorithm()
