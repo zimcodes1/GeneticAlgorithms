@@ -116,22 +116,30 @@ def mutate(route: list[City|None], mutation_rate:float=0.01) -> list[City | None
     return route
 
 #The main genetic algorithm function
-def genetic_algorithm(generations:int = 10):
-    population = create_population(10)
+def genetic_algorithm(generations:int = 100, population_size:int = 50, mutation_rate:float = 0.02):
+    population = create_population(population_size)
     print(f"\nInitial generation: {population}\n")
 
     for generation in range(generations):
         new_population = []
+
+        # Preserve the best route
+        best_individual = min(population, key=route_distance)
+        new_population.append(best_individual.copy())
+
         parents = select_fittest_route(population)
-        
-        while len(new_population) < 10:
+
+        while len(new_population) < population_size:
             parent1, parent2 = random.sample(parents, 2)
             child1, child2 = crossover(parent1, parent2)
-            child1, child2 = mutate(child1), mutate(child2)
+            child1, child2 = mutate(child1, mutation_rate=mutation_rate), mutate(child2, mutation_rate=mutation_rate)
             new_population += child1, child2
+
         population = new_population
         population.sort(key=route_fitness, reverse=True)
-        best_individual = population[0]
-        print(f"Generation {generation + 1}: \nShortest route: {best_individual}, Route Fitness: {route_fitness(best_individual)}")
+
+        print(f"Generation {generation + 1}: \nShortest route: {population[0]}, Route Distance: {route_distance(population[0])}")
+    print(f"Final Result: {population[0]}, Distance: {route_distance(population[0])}")
+    return population[0]
     
 genetic_algorithm()
