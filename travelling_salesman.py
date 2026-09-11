@@ -1,5 +1,6 @@
 import random
 import math
+import matplotlib.pyplot as plt
 
 # Define the Cities Class
 class City():
@@ -33,6 +34,8 @@ cities_grid = {
 
 A, B, C, D, E, F, G, H, I, J = [City(name=x, x=cities_grid[x].get("x"), y=cities_grid[x].get('y')) for x in cities_grid.keys()]
 cities_list = [A, B, C, D, E, F, G, H, I, J]
+
+cities_names_list = [city.name for city in cities_list]
 
 # Define function to create an individual candidate solution
 
@@ -115,10 +118,27 @@ def mutate(route: list[City|None], mutation_rate:float=0.01) -> list[City | None
         route[points[0]], route[points[1]] = route[points[1]], route[points[0]]
     return route
 
+def plot_route(route: list[City], title: str, filename: str):
+    xs = [city.x for city in route] + [route[0].x]
+    ys = [city.y for city in route] + [route[0].y]
+    fig, ax = plt.subplots()
+    ax.plot(xs, ys, marker='o')
+    for city in route:
+        ax.annotate(city.name, (city.x, city.y), textcoords="offset points", xytext=(0, 8))
+    ax.set_title(title)
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.margins(0.15)
+    fig.savefig(f"./plots/{filename}")
+    plt.close(fig)
+
 #The main genetic algorithm function
 def genetic_algorithm(generations:int = 100, population_size:int = 50, mutation_rate:float = 0.02):
     population = create_population(population_size)
     print(f"\nInitial generation: {population}\n")
+
+    population.sort(key=route_fitness, reverse=True)
+    plot_route(population[0], "Generation 0 (Initial Best)", "generation_0.png")
 
     for generation in range(generations):
         new_population = []
@@ -137,9 +157,11 @@ def genetic_algorithm(generations:int = 100, population_size:int = 50, mutation_
 
         population = new_population
         population.sort(key=route_fitness, reverse=True)
-
+        plot_route(population[0], f"Generation {generation + 1} — Distance: {route_distance(population[0]):.2f}", f"generation_{generation + 1}.png")
         print(f"Generation {generation + 1}: \nShortest route: {population[0]}, Route Distance: {route_distance(population[0])}")
     print(f"Final Result: {population[0]}, Distance: {route_distance(population[0])}")
+    plot_route(population[0], title=f"Final Result | Best Route Found, Distance: {route_distance(population[0]):2f}", filename="result")
+    
     return population[0]
     
 genetic_algorithm()

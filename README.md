@@ -34,6 +34,41 @@ Finds the real-valued `x` in range `[-10.0, 10.0]` that maximises `f(x) = x² + 
 - Population size: 10, Generations: 20
 - Expected best: around `x ≈ -9.0` where `f(x) ≈ 90.56`
 
+### [`travelling_salesman.py`](./travelling_salesman.py) — Combinatorial domain (Travelling Salesman Problem)
+
+Finds the shortest route that visits all 10 European cities exactly once and returns to the start — a classic NP-hard combinatorial optimisation problem.
+
+- Cities are represented as `City` objects with `(x, y)` coordinates on a 2D grid (units are arbitrary distance units, not real-world km):
+
+  | City | x | y |
+  |------|---|---|
+  | London | 3 | 11 |
+  | Paris | 5 | 7 |
+  | Brussels | 6 | 10 |
+  | Luxembourg | 8 | 8 |
+  | Amsterdam | 7 | 13 |
+  | Hamburg | 12 | 15 |
+  | Frankfurt | 11 | 9 |
+  | Berlin | 16 | 13 |
+  | Munich | 14 | 6 |
+  | Zurich | 11 | 4 |
+- Each individual is a **permutation** of all 10 cities (a candidate route)
+- **Fitness:** `1 / total_route_distance` — shorter routes score higher
+- **Distance:** Euclidean distance `√((x₂-x₁)² + (y₂-y₁)²)` summed across all consecutive city pairs, including the return leg back to the start
+- **Selection:** top 10 fittest routes kept (elitism)
+- **Crossover:** Ordered Crossover (OX) — a random-length segment is copied from parent 1, then remaining cities are filled in the order they appear in parent 2, preserving relative order without introducing duplicates
+- **Mutation:** Swap Mutation at a 15% rate — two randomly chosen cities in the route swap positions, maintaining a valid permutation
+- Population size: 50, Generations: 100
+- Best found: `Luxembourg → Frankfurt → Zurich → Munich → Berlin → Hamburg → Amsterdam → London → Brussels → Paris → Luxembourg` with a distance of `≈ 42.86` units
+
+**Initial best route (Generation 0):**
+
+![Initial Best Route](./plots/generation_0.png)
+
+**Best route after 100 generations:**
+
+![Final Best Route](./plots/generation_100.png)
+
 ---
 
 Date: 10-09-2026
